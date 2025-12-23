@@ -1,1 +1,1 @@
-# Fast-Eigenvalue-Computation
+# Fast Eigenvalue Computation for Block-Structured Matrices with Diagonal Blocks
