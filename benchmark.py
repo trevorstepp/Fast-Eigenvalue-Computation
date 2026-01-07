@@ -2,7 +2,7 @@ import time
 import numpy as np
 import numpy.typing as npt
 
-from algorithm import eig_KxK_diagblocks, compare_results
+from algorithm import eig_KxK_diagblocks
 
 def time_block_method(K: int, n: int, M: npt.NDArray):
     """
