@@ -5,14 +5,25 @@ from algorithm import eig_KxK_diagblocks
 
 def verify_results(K: int, n: int, matrix: npt.NDArray, atol: float=1e-8) -> None:
     """
-    Docstring for compare_results
+    Docstring for compare_results.
     
-    :param K: Number of block matrices per row/col (K^2 total blocks).
-    :type K: int
-    :param n: Number of rows/cols in each block matrix (each block matrix is n x n).
-    :type n: int
-    :param matrix: The matrix containing all block matrices (Kn x Kn).
-    :type matrix: npt.NDArray
+    Parameters
+    ----
+    K : int
+        Number of block matrices per row/col (K^2 total blocks).
+    n : int
+        Number of rows/cols in each block matrix (each block matrix is n x n).
+    matrix : ndarray
+        The full matrix containing all block matrices (Kn x Kn).
+    atol : float
+        The absolute tolerance for
+    
+    Returns
+    ----
+    eig_check : bool
+        T
+    max_res : float
+        The maximum residual (error) among all eigenvectors.
     """
     # KxK algorithm results
     alg_eigs, alg_vecs = eig_KxK_diagblocks(K, n, matrix)
@@ -26,7 +37,16 @@ def verify_results(K: int, n: int, matrix: npt.NDArray, atol: float=1e-8) -> Non
 
     # eigenvector residual check
     max_res = 0.0
+    res_sum = 0.0
     for i in range(len(alg_eigs)):
-        pass
+        eigval = alg_eigs[i]
+        eigvec = alg_vecs[:, i]
+        res = np.linalg.norm(matrix @ eigvec - eigval * eigvec)
+        res_sum += res
+        max_res = max(max_res, res)
 
-    return eig_check, max_res
+    return {
+        "eigenvalues_match": eig_check,
+        "max_residual": max_res,
+        "mean_residual": res_sum / len(alg_eigs)
+    }

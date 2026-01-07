@@ -9,7 +9,7 @@ def eig_KxK_diagblocks(K: int, n: int, matrix: npt.NDArray) -> tuple[npt.NDArray
     ----
     K : int
         Number of block matrices per row/col (K^2 total blocks).
-    N : int
+    n : int
         Number of rows/cols in each block matrix (each block matrix is n x n).
     matrix : ndarray
         The full matrix containing all block matrices (Kn x Kn).

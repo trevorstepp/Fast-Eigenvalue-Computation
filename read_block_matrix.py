@@ -2,8 +2,15 @@ from pathlib import Path
 import scipy.io as sio
 import numpy as np
 import numpy.typing as npt
+from typing import NamedTuple
 
-def load_block_matrix(file: str) -> tuple[int, int, int, npt.NDArray]:
+class BlockMatrix(NamedTuple):
+    Kn: int
+    K: int
+    n: int
+    matrix: npt.NDArray
+
+def load_block_matrix(file: str) -> BlockMatrix:
     """
     Load a block matrix from a .mat file.
 
@@ -14,14 +21,17 @@ def load_block_matrix(file: str) -> tuple[int, int, int, npt.NDArray]:
 
     Returns
     ----
-    Kn : int
-        Total number of rows/columns of the full matrix.
-    K : int
-        Number of blocks per row/column.
-    n : int
-        Size of each block (n x n).
-    matrix : ndarray
-        The full block matrix loaded from the .mat file.
+    BlockMatrix
+        A named tuple with the following attributes:
+
+        Kn : int
+            Total number of rows/columns of the full matrix.
+        K : int
+            Number of blocks per row/column.
+        n : int
+            Size of each block (n x n).
+        matrix : ndarray
+            The full block matrix loaded from the .mat file.
     """
     # get to location of .mat file with block matrix
     repo_root = Path(__file__).parent.parent
@@ -33,7 +43,7 @@ def load_block_matrix(file: str) -> tuple[int, int, int, npt.NDArray]:
     Kn = matrix.shape[0]
     K = 3
     n = Kn // K
-    return Kn, K, n, matrix
+    return BlockMatrix(Kn, K, n, matrix)
 
 """
 def scipy_version(matrix):
