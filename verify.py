@@ -1,11 +1,20 @@
 import numpy as np
 import numpy.typing as npt
+from typing import NamedTuple
 
 from algorithm import eig_KxK_diagblocks
 
-def verify_results(K: int, n: int, matrix: npt.NDArray, atol: float=1e-8) -> None:
+class VerificationResult(NamedTuple):
+    eigenvalues_match: bool
+    max_residual: float
+    mean_residual: float
+
+def verify_results(K: int, n: int, matrix: npt.NDArray, atol: float=1e-8) -> VerificationResult:
     """
-    Docstring for compare_results.
+    Verify correctness of the block-diagonal eigendecomposition algorithm.
+
+    Compare eigenvalues produced by the K x K block-diagonal algorithm against Numpy's eig
+    function and evaluate the accuracy of the computed eigenvectors using residual norms.
     
     Parameters
     ----
@@ -14,16 +23,21 @@ def verify_results(K: int, n: int, matrix: npt.NDArray, atol: float=1e-8) -> Non
     n : int
         Number of rows/cols in each block matrix (each block matrix is n x n).
     matrix : ndarray
-        The full matrix containing all block matrices (Kn x Kn).
+        Full block-structured matrix (Kn x Kn).
     atol : float
-        The absolute tolerance for
+        Absolute tolerance used to determine equality of sorted eigenvalues between
+        the block algorithm and NumPy's eig results.
     
     Returns
-    ----
-    eig_check : bool
-        T
-    max_res : float
-        The maximum residual (error) among all eigenvectors.
+    ---- 
+    A named tuple with the following attributes:
+
+    eigenvalues_match : bool 
+        Indicates whether the sorted eigenvalues match NumPy's eig results.
+    max_residual : float 
+        Maximum eigenpair residual ``||matrix @ v - lambda * v||``.
+    mean_residual : float 
+        Mean eigenpair residual over all eigenvectors.
     """
     # KxK algorithm results
     alg_eigs, alg_vecs = eig_KxK_diagblocks(K, n, matrix)
@@ -45,8 +59,10 @@ def verify_results(K: int, n: int, matrix: npt.NDArray, atol: float=1e-8) -> Non
         res_sum += res
         max_res = max(max_res, res)
 
-    return {
-        "eigenvalues_match": eig_check,
-        "max_residual": max_res,
-        "mean_residual": res_sum / len(alg_eigs)
-    }
+    mean_res = res_sum / len(alg_eigs)
+
+    return VerificationResult(
+        eigenvalues_match=eig_check,
+        max_residual=max_res,
+        mean_residual=mean_res
+    )

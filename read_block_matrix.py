@@ -21,17 +21,16 @@ def load_block_matrix(file: str) -> BlockMatrix:
 
     Returns
     ----
-    BlockMatrix
-        A named tuple with the following attributes:
+    A named tuple with the following attributes:
 
-        Kn : int
-            Total number of rows/columns of the full matrix.
-        K : int
-            Number of blocks per row/column.
-        n : int
-            Size of each block (n x n).
-        matrix : ndarray
-            The full block matrix loaded from the .mat file.
+    Kn : int
+        Total number of rows/columns of the full matrix.
+    K : int
+        Number of blocks per row/column.
+    n : int
+        Size of each block (n x n).
+    matrix : ndarray
+        Full block matrix loaded from the .mat file.
     """
     # get to location of .mat file with block matrix
     repo_root = Path(__file__).parent.parent
