@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 
 from benchmark import time_block_method, time_numpy
 from verify import verify_results
+from build import build_block_matrix
 
 N_VALUES = [100, 250, 500, 750, 1000, 1500, 2000]
 
@@ -24,8 +25,18 @@ def measure_runtime_and_verify() -> None:
     for n in N_VALUES:
         print(f"\nRunning n = {n}")
 
-        #block_time.append(time_block_method(K=3, n=n, M=M))
-        #eig_time.append(time_numpy(K=3, n=n, M=M))
+        # create the block-diagonal matrix
+        M = build_block_matrix(K=3, n=n, seed=0)
+
+        # correctness check
+        results = verify_results(K=3, n=n, matrix=M, atol=1e-4)
+        print(f"Eigenvalues match: {results.eigenvalues_match}")
+        print(f"Maximum residual: {results.max_residual:.2e}")
+        print(f"Mean residual: {results.mean_residual:.2e}")
+
+        # measure time for both methods
+        block_time.append(time_block_method(K=3, n=n, M=M))
+        eig_time.append(time_numpy(M=M))
     
     return block_time, eig_time
 

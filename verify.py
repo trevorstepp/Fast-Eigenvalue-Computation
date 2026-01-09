@@ -9,7 +9,7 @@ class VerificationResult(NamedTuple):
     max_residual: float
     mean_residual: float
 
-def verify_results(K: int, n: int, matrix: npt.NDArray, atol: float=1e-8) -> VerificationResult:
+def verify_results(K: int, n: int, matrix: npt.NDArray, atol: float=1e-8, rtol: float=1e-8) -> VerificationResult:
     """
     Verify correctness of the block-diagonal eigendecomposition algorithm.
 
@@ -47,7 +47,12 @@ def verify_results(K: int, n: int, matrix: npt.NDArray, atol: float=1e-8) -> Ver
     # sort eigenvalue results (could be different orderings) before comparing
     alg_eigs_sorted = np.sort_complex(alg_eigs)
     reg_eigs_sorted = np.sort_complex(reg_eigs)
-    eig_check = np.allclose(alg_eigs_sorted, reg_eigs_sorted, atol=atol)
+    #alg_eigs_sorted = np.sort(alg_eigs)
+    #reg_eigs_sorted = np.sort(reg_eigs)
+    for i in range(10):
+        print(f"KxK method: {alg_eigs_sorted[i]}")
+        print(f"NumPy method: {reg_eigs_sorted[i]}")
+    eig_check = np.allclose(alg_eigs_sorted, reg_eigs_sorted, atol=atol, rtol=0)
 
     # eigenvector residual check
     max_res = 0.0
