@@ -9,7 +9,8 @@ class VerificationResult(NamedTuple):
     max_residual: float
     mean_residual: float
 
-def verify_results(K: int, n: int, matrix: npt.NDArray, atol: float=1e-8, rtol: float=1e-8) -> VerificationResult:
+def verify_results(matrix: npt.NDArray, alg_eigs: npt.NDArray, alg_vecs: npt.NDArray, 
+                   reg_eigs: npt.NDArray, reg_vecs: npt.NDArray, atol: float=1e-8) -> VerificationResult:
     """
     Verify correctness of the block-diagonal eigendecomposition algorithm.
 
@@ -18,15 +19,23 @@ def verify_results(K: int, n: int, matrix: npt.NDArray, atol: float=1e-8, rtol: 
     
     Parameters
     ----
-    K : int
-        Number of block matrices per row/col (K^2 total blocks).
-    n : int
-        Number of rows/cols in each block matrix (each block matrix is n x n).
-    matrix : ndarray
-        Full block-structured matrix (Kn x Kn).
-    atol : float
-        Absolute tolerance used to determine equality of sorted eigenvalues between
-        the block algorithm and NumPy's eig results.
+    matrix : (Kn, Kn) ndarray
+        Full block-structured matrix whose eigenpairs are being verified.
+    alg_eigs : (Kn,) ndarray
+        Eigenvalues of `matrix` computed using the block-diagonal algorithm.
+        The ordering is arbitrary and corresponds column-wise to `alg_vecs`.
+    alg_vecs : (Kn, Kn) ndarray
+        Eigenvectors of `matrix` computed using the block-diagonal algorithm.
+        Each column ``alg_vecs[:, i]`` is the eigenvector associated with ``alg_eigs[i]``.
+    reg_eigs: (Kn,) ndarray
+        Reference eigenvalues of `matrix` computed using NumPy's dense eigensolver.
+        The ordering may differ from `alg_eigs`.
+    reg_vecs: (Kn, Kn) ndarray
+        Reference eigenvectors of `matrix` computed using NumPy's dense eigensolver.
+        Each column ``reg_vecs[:, i]`` corresponds to ``reg_eigs[i]``.
+    atol : float, optional
+        Absolute tolerance used when comparing the sorted eigenvalues from the 
+        block algorithm and the NumPy reference solution.
     
     Returns
     ---- 
@@ -39,16 +48,10 @@ def verify_results(K: int, n: int, matrix: npt.NDArray, atol: float=1e-8, rtol: 
     mean_residual : float 
         Mean eigenpair residual over all eigenvectors.
     """
-    # KxK algorithm results
-    alg_eigs, alg_vecs = eig_KxK_diagblocks(K, n, matrix)
-    # regular method (eig on entire matrix) results
-    reg_eigs, reg_vecs = np.linalg.eig(matrix)
-
     # sort eigenvalue results (could be different orderings) before comparing
     alg_eigs_sorted = np.sort_complex(alg_eigs)
     reg_eigs_sorted = np.sort_complex(reg_eigs)
-    #alg_eigs_sorted = np.sort(alg_eigs)
-    #reg_eigs_sorted = np.sort(reg_eigs)
+
     for i in range(10):
         print(f"KxK method: {alg_eigs_sorted[i]}")
         print(f"NumPy method: {reg_eigs_sorted[i]}")
