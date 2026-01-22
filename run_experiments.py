@@ -1,3 +1,4 @@
+import pandas as pd
 import numpy as np
 import numpy.typing as npt
 import matplotlib.pyplot as plt
@@ -65,6 +66,14 @@ def main():
     Docstring for main.
     """
     block_time, eig_time = measure_runtime_and_verify()
+    # save times in CSV file for future reference
+    df = pd.DataFrame({
+        "n": N_VALUES,
+        "block_time": block_time,
+        "dense_time": eig_time
+    })
+    df.to_csv("timings.csv", index=False)
+
     plot_runtime_comparison(block_time, eig_time)
 
 if __name__ == '__main__':

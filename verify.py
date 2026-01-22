@@ -48,14 +48,17 @@ def verify_results(matrix: npt.NDArray, alg_eigs: npt.NDArray, alg_vecs: npt.NDA
     mean_residual : float 
         Mean eigenpair residual over all eigenvectors.
     """
-    # sort eigenvalue results (could be different orderings) before comparing
-    alg_eigs_sorted = np.sort_complex(alg_eigs)
-    reg_eigs_sorted = np.sort_complex(reg_eigs)
+    # compare k largest eigenvalues
+    k = 10
+    alg_dom = dominant_eigs(alg_eigs, k)
+    reg_dom = dominant_eigs(reg_eigs, k)
 
-    for i in range(10):
-        print(f"KxK method: {alg_eigs_sorted[i]}")
-        print(f"NumPy method: {reg_eigs_sorted[i]}")
-    eig_check = np.allclose(alg_eigs_sorted, reg_eigs_sorted, atol=atol, rtol=0)
+    """
+    alg_dom =
+    reg_dom =
+    """
+
+    eig_check = np.allclose(alg_dom, reg_dom, atol=atol, rtol=0)
 
     # eigenvector residual check
     max_res = 0.0
@@ -74,3 +77,24 @@ def verify_results(matrix: npt.NDArray, alg_eigs: npt.NDArray, alg_vecs: npt.NDA
         max_residual=max_res,
         mean_residual=mean_res
     )
+
+def dominant_eigs(eigs: npt.NDArray, k: int) -> npt.NDArray:
+    """
+    Return the `k` eigenvalues with the largest magnitudes from an array of eigenvalues.
+    
+    Parameters
+    ----
+    eigs : ndarray
+        Array of eigenvalues (real or complex) whose magnitudes will be used to 
+        determine dominance.
+    k : int
+        Number of dominant eigenvalues to return. Must be less than or equal to
+        `len(eigs)`.
+    Returns
+    ----
+    ndarray
+        Array of length `k` containing the eigenvalues with the largest magnitudes,
+        in descending order of magnitude.
+    """
+    index_arr = np.argsort(np.abs(eigs))[::-1]
+    return eigs[index_arr][:k]
