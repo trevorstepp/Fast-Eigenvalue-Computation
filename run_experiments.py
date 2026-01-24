@@ -40,7 +40,8 @@ def measure_runtime_and_verify() -> None:
         # correctness check
         correct_check = verify_results(matrix=M, alg_eigs=block_result.eigenvalues, alg_vecs=block_result.eigenvectors,
                                        reg_eigs=numpy_result.eigenvalues, reg_vecs=numpy_result.eigenvectors)
-        print(f"Eigenvalues match: {correct_check.eigenvalues_match}")
+        
+        print(f"Eigenvalues match (top {correct_check.num_eigenvalues_compared}): {correct_check.eigenvalues_match}")
         print(f"Maximum residual: {correct_check.max_residual:.2e}")
         print(f"Mean residual: {correct_check.mean_residual:.2e}")
     

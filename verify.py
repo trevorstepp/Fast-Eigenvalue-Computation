@@ -4,7 +4,10 @@ from typing import NamedTuple
 
 from algorithm import eig_KxK_diagblocks
 
+K_LARGEST = 10  # number of largest eigenvalues to compare
+
 class VerificationResult(NamedTuple):
+    num_eigenvalues_compared: int
     eigenvalues_match: bool
     max_residual: float
     mean_residual: float
@@ -49,14 +52,8 @@ def verify_results(matrix: npt.NDArray, alg_eigs: npt.NDArray, alg_vecs: npt.NDA
         Mean eigenpair residual over all eigenvectors.
     """
     # compare k largest eigenvalues
-    k = 10
-    alg_dom = dominant_eigs(alg_eigs, k)
-    reg_dom = dominant_eigs(reg_eigs, k)
-
-    """
-    alg_dom =
-    reg_dom =
-    """
+    alg_dom = dominant_eigs(alg_eigs, K_LARGEST)
+    reg_dom = dominant_eigs(reg_eigs, K_LARGEST)
 
     eig_check = np.allclose(alg_dom, reg_dom, atol=atol, rtol=0)
 
@@ -73,6 +70,7 @@ def verify_results(matrix: npt.NDArray, alg_eigs: npt.NDArray, alg_vecs: npt.NDA
     mean_res = res_sum / len(alg_eigs)
 
     return VerificationResult(
+        num_eigenvalues_compared=K_LARGEST,
         eigenvalues_match=eig_check,
         max_residual=max_res,
         mean_residual=mean_res
