@@ -9,8 +9,8 @@ def plot_runtime_comparison() -> None:
     K = df['K'][0]
 
     plt.figure(figsize=(8,6))
-    plt.semilogy(df.n, df.block_time, 'o-', label='Our approach (all)')
-    plt.semilogy(df.n, df.dense_time, 's-', label='NumPy eig (full)')
+    plt.semilogy(df.n, df.block_time, 'o-', label='Block approach')
+    plt.semilogy(df.n, df.dense_time, 's-', label='NumPy eig')
     plt.xlabel('discretization size (n)')
     plt.ylabel('run time (s)')
     plt.title(f'All eigenpairs runtime (K={K})')
