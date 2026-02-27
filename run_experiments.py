@@ -80,7 +80,7 @@ def main():
         "dense_time": eig_time,
         "max_residual": block_residuals
     })
-    df.to_csv("multi_run_timings.csv", index=False)
+    df.to_csv("python_timings.csv", index=False)
 
 if __name__ == '__main__':
     main()
