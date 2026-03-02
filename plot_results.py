@@ -1,16 +1,40 @@
 import pandas as pd
 import matplotlib.pyplot as plt
+from pathlib import Path
 
 def plot_runtime_comparison() -> None:
     """
     Docstring for plot_runtime_comparison.
     """
-    df = pd.read_csv("timings.csv")
-    K = df['K'][0]
+    # python csv
+    python_df = pd.read_csv("python_timings.csv")
+    K = python_df['K'][0]
+
+    curr_dir = Path(__file__).parent
+    base_dir = curr_dir.parent
+
+    # julia csv
+    julia_csv = base_dir / "Fast-Eigenvalue-Computation-Julia" / "julia_timings.csv"
+    julia_df = pd.read_csv(julia_csv)
+
+    # matlab csv
+    matlab_csv = base_dir / "fast_Jnlin_eigs" / "matlab_timings.csv"
+    matlab_df = pd.read_csv(matlab_csv)
 
     plt.figure(figsize=(8,6))
-    plt.semilogy(df.n, df.block_time, 'o-', label='Block approach')
-    plt.semilogy(df.n, df.dense_time, 's-', label='NumPy eig')
+
+    # python
+    plt.semilogy(python_df.n, python_df.block_time, 'o-', label='Python Block')
+    plt.semilogy(python_df.n, python_df.dense_time, 's-', label='Python NumPy eig')
+
+    # julia
+    plt.semilogy(julia_df.n, julia_df.block_time, 'o--', label='Julia Block')
+    plt.semilogy(julia_df.n, julia_df.dense_time, 's--', label='Julia eigen')
+
+    # matlab
+    plt.semilogy(matlab_df.n, matlab_df.block_time, 'o-.', label='MATLAB Block')
+    plt.semilogy(matlab_df.n, matlab_df.dense_time, 's-.', label='MATLAB eig')
+
     plt.xlabel('discretization size (n)')
     plt.ylabel('run time (s)')
     plt.title(f'All eigenpairs runtime (K={K})')
