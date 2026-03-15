@@ -25,15 +25,15 @@ def plot_runtime_comparison() -> None:
 
     # python
     plt.semilogy(python_df.n, python_df.block_time, 'o-', label='Python Block')
-    plt.semilogy(python_df.n, python_df.dense_time, 's-', label='Python NumPy eig')
+    plt.semilogy(python_df.n, python_df.dense_time, 'o--', label='Python NumPy eig')
 
     # julia
-    plt.semilogy(julia_df.n, julia_df.block_time, 'o--', label='Julia Block')
+    plt.semilogy(julia_df.n, julia_df.block_time, 's-', label='Julia Block')
     plt.semilogy(julia_df.n, julia_df.dense_time, 's--', label='Julia eigen')
 
     # matlab
-    plt.semilogy(matlab_df.n, matlab_df.block_time, 'o-.', label='MATLAB Block')
-    plt.semilogy(matlab_df.n, matlab_df.dense_time, 's-.', label='MATLAB eig')
+    plt.semilogy(matlab_df.n, matlab_df.block_time, '^-', label='MATLAB Block')
+    plt.semilogy(matlab_df.n, matlab_df.dense_time, '^--', label='MATLAB eig')
 
     plt.xlabel('discretization size (n)')
     plt.ylabel('run time (s)')
