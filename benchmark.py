@@ -1,9 +1,12 @@
 import time
+import timeit
 import numpy as np
 import numpy.typing as npt
 from typing import NamedTuple
 
 from algorithm import eig_KxK_diagblocks
+
+NUM_SAMPLES = 5
 
 class TimingResult(NamedTuple):
     eigenvalues: npt.NDArray
@@ -49,3 +52,14 @@ def time_numpy(M: npt.NDArray) -> TimingResult:
         eigenvectors=vecs,
         time=total_time
     )
+
+def median_time(func) -> float:
+    """
+    Docstring for median_time.
+    """
+    timer = timeit.Timer(func)
+    # automatically determine number of runs per sample
+    loops, _ = timer.autorange()
+    runs = timer.repeat(repeat=NUM_SAMPLES, number=loops)
+
+    return np.median(runs) / loops

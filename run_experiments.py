@@ -1,9 +1,10 @@
 import pandas as pd
 import numpy as np
 
-from benchmark import time_block_method, time_numpy
+from benchmark import time_block_method, time_numpy, median_time
 from verify import verify_results
 from build import build_block_matrix
+from algorithm import eig_KxK_diagblocks
 
 N_VALUES = [100, 250, 500, 750, 1000, 1500, 2000]
 K_VAL = 3
@@ -28,6 +29,26 @@ def measure_runtime_and_verify() -> tuple[list[float], list[float], list[float]]
         # create the block-diagonal matrix
         M = build_block_matrix(K=K_VAL, n=n, seed=0)
 
+        # runtimes
+        block_t = median_time(lambda: eig_KxK_diagblocks(K_VAL, n, M))
+        eig_t = median_time(lambda: np.linalg.eig(M))
+
+        block_time.append(block_t)
+        eig_time.append(eig_t)
+
+        # need to call functions again to get eigenvalues and eigenvectors for correctness check
+        block_eigs, block_vecs = eig_KxK_diagblocks(K_VAL, n, M)
+        numpy_eigs, numpy_vecs = np.linalg.eig(M)
+
+        correct_check = verify_results(matrix=M, alg_eigs=block_eigs, alg_vecs=block_vecs, reg_eigs=numpy_eigs, 
+                               reg_vecs=numpy_vecs)
+        print(f"Eigenvalues match (top {correct_check.num_eigenvalues_compared}): {correct_check.eigenvalues_match}")
+        print(f"Maximum residual: {correct_check.max_residual:.2e}")
+        print(f"Mean residual: {correct_check.mean_residual:.2e}")
+
+        block_max_residuals.append(correct_check.max_residual)
+
+        """
         # list to hold run times, use to take average run time
         run_times_block = []
         run_times_eig = []
@@ -64,6 +85,7 @@ def measure_runtime_and_verify() -> tuple[list[float], list[float], list[float]]
         eig_time.append(avg_eig)
         # store max residual
         block_max_residuals.append(max_res_block)
+        """
     
     return block_time, eig_time, block_max_residuals
 

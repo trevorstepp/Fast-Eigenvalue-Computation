@@ -1,36 +1,26 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+from pathlib import Path
 
-df = pd.read_csv("python_timings.csv")
-n_vals = df.n 
-block = df.block_time
-dense = df.dense_time
+def calc_slopes(language: str, df_name: str):
+    df = pd.read_csv(df_name)
+    n_vals = df.n.to_numpy()
+    block_t = df.block_time.to_numpy()
+    dense_t = df.dense_time.to_numpy()
 
-# compute slope using log-log regression
-slope_block = np.cov(np.log(n_vals), np.log(block))[0, 1] / np.var(np.log(n_vals))
-slope_dense = np.cov(np.log(n_vals), np.log(dense))[0, 1] / np.var(np.log(n_vals))
+    block_slopes = np.diff(np.log(block_t)) / np.diff(np.log(n_vals))
+    dense_slopes = np.diff(np.log(dense_t)) / np.diff(np.log(n_vals))
 
-print(f"Block slope = {slope_block}")
-print(f"Dense slope = {slope_dense}")
+    print(f"{language} block solver slopes between n values: {block_slopes}")
+    print(f"{language} dense solver slopes between n values: {dense_slopes}")
 
-# scatter plot with log-log scales
-plt.figure(figsize=(8,6))
-plt.scatter(n_vals, block, label="Block", marker='o')
-plt.scatter(n_vals, dense, label="Dense", marker='D')
+if __name__ == '__main__':
+    base_dir = Path(__file__).parent.parent
+    calc_slopes("Python", "python_timings.csv")
 
-# reference lines
-plt.plot(n_vals, n_vals * block[0]/n_vals[0], linestyle='--', label="O(n)")
-plt.plot(n_vals, n_vals**3 * dense[0]/n_vals[0]**3, linestyle='--', label="O(n^3)")
+    julia_csv = base_dir / "Fast-Eigenvalue-Computation-Julia" / "julia_timings.csv"
+    calc_slopes("Julia", julia_csv)
 
-plt.xscale('log')
-plt.yscale('log')
-plt.xlabel("n")
-plt.ylabel("Time (s)")
-plt.title("Scaling of Block vs Dense Eigensolvers")
-plt.grid(True, which='both', linestyle=':', linewidth=0.5)
-plt.legend()
-
-# save figure
-plt.savefig("scaling_plot.png", dpi=300)
-plt.show()
+    matlab_csv = base_dir / "fast_Jnlin_eigs" / "matlab_timings.csv"
+    calc_slopes("MATLAB", matlab_csv)
