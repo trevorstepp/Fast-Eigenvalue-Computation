@@ -1,19 +1,36 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+
 from pathlib import Path
+from numpy.polynomial.polynomial import polyfit
 
 def calc_slopes(language: str, df_name: str):
     df = pd.read_csv(df_name)
-    n_vals = df.n.to_numpy()
-    block_t = df.block_time.to_numpy()
-    dense_t = df.dense_time.to_numpy()
+    df_large_n = df[df["n"] >= 500]
 
-    block_slopes = np.diff(np.log(block_t)) / np.diff(np.log(n_vals))
-    dense_slopes = np.diff(np.log(dense_t)) / np.diff(np.log(n_vals))
+    # want log-log slope
+    log_n = np.log(df_large_n["n"])
+    log_block = np.log(df_large_n["block_time"])
+    log_dense = np.log(df_large_n["dense_time"])
 
-    print(f"{language} block solver slopes between n values: {block_slopes}")
-    print(f"{language} dense solver slopes between n values: {dense_slopes}")
+    intercept_block, slope_block = polyfit(log_n, log_block, 1)
+    intercept_dense, slope_dense = polyfit(log_n, log_dense, 1)
+
+    print(f"{language} block slope: {slope_block}")
+    print(f"{language} dense slope: {slope_dense}")
+
+    # compute fitted line
+    fit_block = intercept_block + slope_block * log_n
+    fit_dense = intercept_dense + slope_dense * log_n
+
+    # plot for sanity check
+    plt.scatter(log_n, log_block, label=f"{language} Block")
+    plt.scatter(log_n, log_dense, label=f"{language} Dense")
+    plt.plot(log_n, fit_block, linestyle="--")
+    plt.plot(log_n, fit_dense, linestyle="--")
+    plt.legend()
+    plt.show()
 
 if __name__ == '__main__':
     base_dir = Path(__file__).parent.parent
@@ -24,3 +41,5 @@ if __name__ == '__main__':
 
     matlab_csv = base_dir / "fast_Jnlin_eigs" / "matlab_timings.csv"
     calc_slopes("MATLAB", matlab_csv)
+
+    #calc_slopes("Python", "test_timings.csv")

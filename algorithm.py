@@ -27,12 +27,10 @@ def eig_KxK_diagblocks(K: int, n: int, matrix: npt.NDArray) -> tuple[npt.NDArray
     vecs = np.zeros(shape=(K * n, K * n), dtype=complex)
 
     M_l = np.zeros(shape=(K, K), dtype=complex)
-    V = np.zeros(shape=(K * n, K), dtype=complex)
 
     # column counter
     col = 0
 
-    # for each l = 1, ..., n
     for l in range(n):
         # fill M_l
         for i in range(K):
@@ -42,12 +40,10 @@ def eig_KxK_diagblocks(K: int, n: int, matrix: npt.NDArray) -> tuple[npt.NDArray
         eigvals, eigvecs = np.linalg.eig(M_l)
 
         eigs[col:col + K] = eigvals
-        V.fill(0)
         
-        for i in range(K):
-            for j in range(K):
-                V[i * n + l, j] = eigvecs[i, j]
+        for j in range(K):  # col
+            for i in range(K):  # row
+                vecs[i * n + l, col + j] = eigvecs[i, j]
         
-        vecs[:, col:col + K] = V
         col += K
     return eigs, vecs
