@@ -1,4 +1,4 @@
-include("BlockEig.jl")
+include("../BlockEig.jl")
 using .BlockEig
 using Printf
 using Statistics

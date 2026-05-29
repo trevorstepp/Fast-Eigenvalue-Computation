@@ -7,7 +7,7 @@ from numpy.polynomial.polynomial import polyfit
 
 def calc_slopes(data_sources: dict) -> None:
     """
-    Plots.
+    Plots... to be written
 
     Parameters
     ----
@@ -59,6 +59,7 @@ def calc_slopes(data_sources: dict) -> None:
     plt.show()
 
 if __name__ == '__main__':
+    # needs to be re-written to do new file structure
     base_dir = Path(__file__).parent.parent.parent.parent
     scaling_dir = Path(__file__).parent
     python_csv = scaling_dir / "python_large_n_timings.csv"
