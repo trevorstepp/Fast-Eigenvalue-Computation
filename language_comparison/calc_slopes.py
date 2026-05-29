@@ -3,7 +3,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from pathlib import Path
-from numpy.polynomial.polynomial import polyfit
 
 def calc_slopes(data_sources: dict) -> None:
     """
@@ -38,7 +37,7 @@ def calc_slopes(data_sources: dict) -> None:
 
         block_fit = np.exp(intercept) * (n ** slope)
         # we expect the fit to have a slope around one (O(n))
-        # c sets the vertical position of the reference line (O(n))
+        # c sets the vertical position of the reference line
         c = block.iloc[0] / n.iloc[0]
         theoretical = c * n
 
